@@ -1,0 +1,11 @@
+plugins {
+    id 'com.android.application'
+}
+android {
+    namespace 'com.test'
+    compileSdk 34
+    // try kotlinOptions
+    kotlin {
+        jvmToolchain(17)
+    }
+}
