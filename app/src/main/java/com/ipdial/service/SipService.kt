@@ -474,36 +474,30 @@ class SipService : Service() {
                         return@withContext
                     }
 
-                    if (ringtoneUriStr == "android.resource://$packageName/raw/ipdial_ringtone") {
-                        mediaPlayer = android.media.MediaPlayer.create(applicationContext, R.raw.ipdial_ringtone)
-                        mediaPlayer?.isLooping = true
-                        mediaPlayer?.start()
-                    } else {
-                        val ringtoneUri = ringtoneUriStr?.let { android.net.Uri.parse(it) }
-                            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-                        
-                        try {
-                            // Try MediaPlayer for guaranteed looping on all versions
-                            val mp = android.media.MediaPlayer()
-                            mp.setDataSource(applicationContext, ringtoneUri)
-                            mp.setAudioAttributes(
-                                android.media.AudioAttributes.Builder()
-                                    .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
-                                    .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                                    .build()
-                            )
-                            mp.isLooping = true
-                            mp.prepare()
-                            mp.start()
-                            mediaPlayer = mp
-                        } catch (e: Exception) {
-                            Log.e("SipService", "MediaPlayer failed for ringtone, falling back to RingtoneManager", e)
-                            ringtone = RingtoneManager.getRingtone(applicationContext, ringtoneUri)
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                                ringtone?.isLooping = true
-                            }
-                            ringtone?.play()
+                    val ringtoneUri = ringtoneUriStr?.let { android.net.Uri.parse(it) }
+                        ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+                    
+                    try {
+                        // Try MediaPlayer for guaranteed looping on all versions
+                        val mp = android.media.MediaPlayer()
+                        mp.setDataSource(applicationContext, ringtoneUri)
+                        mp.setAudioAttributes(
+                            android.media.AudioAttributes.Builder()
+                                .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                                .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                                .build()
+                        )
+                        mp.isLooping = true
+                        mp.prepare()
+                        mp.start()
+                        mediaPlayer = mp
+                    } catch (e: Exception) {
+                        Log.e("SipService", "MediaPlayer failed for ringtone, falling back to RingtoneManager", e)
+                        ringtone = RingtoneManager.getRingtone(applicationContext, ringtoneUri)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                            ringtone?.isLooping = true
                         }
+                        ringtone?.play()
                     }
                     
                     if (vibrateEnabled) {
